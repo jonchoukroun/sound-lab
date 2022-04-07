@@ -4,7 +4,6 @@ CXXFLAGS+=-I.
 CXXFLAGS+=-W
 -CXXFLAGS+=Wall
 CXXFLAGS+=-Wextra
-CXXFLAGS+=-Wpointer-arith
 
 LDFLAGS=-lSDL2
 
@@ -29,4 +28,4 @@ clean:
 	rm -f $(BUILD_DIR)*.o
 	rm -f $(TARGET)
 
-re: clean build
+all: clean build
