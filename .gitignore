@@ -1,0 +1,7 @@
+# Build artifacts
+sound_lab
+build/
+
+# Misc
+.dSYM
+.DS_Store
