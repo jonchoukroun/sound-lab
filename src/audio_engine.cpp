@@ -79,7 +79,7 @@ void AudioEngine::fillBuffer(const Uint8* const stream, int len)
     for (unsigned long i = 0; i < (len / sizeof(short)); i++) {
         double output = 0.0;
         if (m_instrument.isPlaying()) {
-            output += GAIN * m_instrument.getAmplitude();
+            output += GAIN * m_instrument.getSample();
         }
         out[i] = output;
         m_instrument.update(m_step);

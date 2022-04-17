@@ -7,56 +7,49 @@ using std::endl;
 
 void Instrument::initialize(double F, int N)
 {
+    m_duration = m_attack + m_decay;
+
     m_sampleRate = F;
     m_samples = N - 1;
     cout << "Instrument initialized" << endl;
     cout << "F = " << m_sampleRate << " samples per second" << endl;
     cout << "N = " << m_samples << " samples" << endl;
-
-    generateTable();
 }
 
 void Instrument::setFrequency(double freq)
 {
-    m_step = (double)m_samples * freq / m_sampleRate;
+    m_phaseStep = (double)m_samples * freq / m_sampleRate;
     cout << "Frequency set" << endl;
     cout << "f = " << freq << " Hz" << endl;
-    cout << "p = " << m_step << " samples" << endl;
-}
+    cout << "p = " << m_phaseStep << " samples" << endl;
 
-void Instrument::setDuration(double dur)
-{
-    m_duration = dur;
+    generateTable();
 }
 
 void Instrument::trigger()
 {
-    m_cur = 0.0;
+    m_cursor = 0.0;
     m_elapsed = 0.0;
     m_isPlaying = true;
 }
 
-double Instrument::getAmplitude()
+// Use linear interpolation to get wavetable sample
+double Instrument::getSample()
 {
-    int i0 = (int)m_cur;
+    int i0 = (int)m_cursor;
     int i1 = i0 + 1;
-    double m = m_cur - i0;
+    double m = m_cursor - i0;
     double s0 = m_table.at(i0);
     double s1 = m_table.at(i1);
     double a = s0 + m * (s1 - s0);
 
-    if ((m_cur += m_step) > (double)m_samples) {
-        m_cur -= m_samples;
-    }
-
-    return a;
+    return getAmplitude() * a;
 }
 
-// TODO: combine engine's time step with sample step using
-// time to sample conversion
 void Instrument::update(double time)
 {
-    if ((m_elapsed += time) >= m_duration) {
+    incrementPhase();
+    if ((m_elapsed += time) > m_duration) {
         m_isPlaying = false;
     }
 }
@@ -68,7 +61,7 @@ bool Instrument::isPlaying()
 
 void Instrument::generateTable()
 {
-    if (!m_step) {
+    if (!m_phaseStep) {
         cout << "Error: not initialized" << endl;
         return;
     }
@@ -76,14 +69,26 @@ void Instrument::generateTable()
     for (int i = 0; i < m_samples; ++i) {
         double a = std::sin(2 * M_PI * i / m_samples);
         m_table.push_back(a);
-        m_cur += m_step;
+        m_cursor += m_phaseStep;
     }
     m_table.push_back(0);
 }
 
-void Instrument::increment()
+void Instrument::incrementPhase()
 {
-    if ((m_cur += m_step) > (double)m_samples) {
-        m_cur -= m_samples;
+    if ((m_cursor += m_phaseStep) > (double)m_samples) {
+        m_cursor -= m_samples;
+    }
+}
+
+double Instrument::getAmplitude()
+{
+    if (m_elapsed > m_duration) {
+        cout << "Error: sample length exceeded" << endl;
+        return 0.0;
+    } else if (m_elapsed <= m_attack) {
+        return 1.0 / m_attack * m_elapsed;
+    } else {
+        return -1.0 / m_decay * (m_elapsed - m_attack) + 1;
     }
 }

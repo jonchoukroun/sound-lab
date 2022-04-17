@@ -32,8 +32,7 @@ int main()
     AudioEngine engine(instrument);
     if (!engine.initialize()) return -1;
 
-    instrument.setFrequency(220);
-    instrument.setDuration(1.0);
+    instrument.setFrequency(67);
 
     while(!quit) {
         fpsTimer.start();
