@@ -8,9 +8,7 @@ const double GAIN = 25000.0;
 
 AudioEngine::AudioEngine(Instrument &inst)
 : m_instrument(inst)
-{
-    m_instrument.initialize(m_sampleRate, m_sampleSize);
-}
+{}
 
 AudioEngine::~AudioEngine()
 {

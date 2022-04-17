@@ -1,14 +1,18 @@
 #include <iostream>
 #include <SDL2/SDL.h>
 #include "audio_engine.h"
+#include "envelope.h"
 #include "instrument.h"
 #include "timer.h"
 
 using std::cout;
 using std::endl;
 
-static const int SCREEN_WIDTH = 640;
-static const int SCREEN_HEIGHT = 480;
+const int SCREEN_WIDTH = 640;
+const int SCREEN_HEIGHT = 480;
+
+const double SAMPLE_RATE = 44100.0;
+const int SAMPLE_SIZE = 1024;
 
 static const double TICKS_PER_FRAME = 1000.0 / 60.0;
 
@@ -27,7 +31,23 @@ int main()
     SDL_Event e;
     Timer fpsTimer;
 
-    Instrument instrument;
+    Envelope::Settings es {
+        .sampleRate = SAMPLE_RATE,
+        .sampleSize = SAMPLE_SIZE,
+        .attack = 0.0,
+        .decay = 0.3 * SAMPLE_RATE,
+        .targetRatioA = 0.0001,
+        .targetRatioD = 0.0001
+    };
+    Envelope ampEnv {es};
+
+    Instrument::Settings is {
+        .sampleRate = SAMPLE_RATE,
+        .sampleSize = SAMPLE_SIZE,
+        .frequency = 47,
+        .ampEnv = ampEnv
+    };
+    Instrument instrument {is};
 
     AudioEngine engine(instrument);
     if (!engine.initialize()) return -1;

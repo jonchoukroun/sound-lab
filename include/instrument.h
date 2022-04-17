@@ -3,11 +3,21 @@
 
 #include <vector>
 #include <cmath>
+#include "envelope.h"
 
 class Instrument
 {
 public:
-    void initialize(double F, int N);
+    struct Settings {
+        double sampleRate;
+        int sampleSize;
+        double frequency;
+        Envelope &ampEnv;
+    };
+
+    Instrument(Settings &);
+    ~Instrument() = default;
+
     void setFrequency(double f);
 
     void trigger();
@@ -27,11 +37,6 @@ private:
     // Current position in wavetable
     double m_cursor;
 
-    // Hard coded envelope
-    const double m_attack = 0.0;
-    const double m_decay= 0.3;
-    // Length of sound, in seconds
-    double m_duration;
     double m_elapsed;
 
     bool m_isPlaying;
@@ -41,7 +46,7 @@ private:
     void generateTable();
     void incrementPhase();
 
-    double getAmplitude();
+    Envelope &m_ampEnv;
 };
 
 #endif
