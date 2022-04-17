@@ -4,7 +4,20 @@
 using std::cout;
 using std::endl;
 
-AudioEngine::AudioEngine()
+const double GAIN = 25000.0;
+
+AudioEngine::AudioEngine(Instrument &inst)
+: m_instrument(inst)
+{
+    m_instrument.initialize(m_sampleRate, m_sampleSize);
+}
+
+AudioEngine::~AudioEngine()
+{
+    SDL_CloseAudioDevice(m_deviceId);
+}
+
+bool AudioEngine::initialize()
 {
     SDL_AudioSpec desiredSpec;
     desiredSpec.freq = m_sampleRate;
@@ -23,22 +36,23 @@ AudioEngine::AudioEngine()
     );
     if (m_deviceId == 0) {
         cout << "Failed to open audio device! Error: " << SDL_GetError() << endl;
+        return false;
     }
-}
 
-AudioEngine::~AudioEngine()
-{
-    SDL_CloseAudioDevice(m_deviceId);
+    return true;
 }
 
 void AudioEngine::start()
 {
+    cout << "Play" << endl;
+    m_elapsed = 0.0;
     m_playing = true;
     SDL_PauseAudioDevice(m_deviceId, SDL_FALSE);
 }
 
 void AudioEngine::stop()
 {
+    cout << "Stop" << endl;
     m_playing = false;
     SDL_PauseAudioDevice(m_deviceId, SDL_TRUE);
 
@@ -65,7 +79,10 @@ void AudioEngine::fillBuffer(const Uint8* const stream, int len)
     short *out = (short *)stream;
     for (unsigned long i = 0; i < (len / sizeof(short)); i++) {
         double output = 0.0;
-
+        if (m_instrument.isPlaying()) {
+            output += GAIN * m_instrument.getAmplitude();
+        }
         out[i] = output;
+        m_elapsed += m_step;
     }
 }

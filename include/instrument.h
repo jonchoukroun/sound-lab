@@ -7,25 +7,28 @@
 class Instrument
 {
 public:
-    void generateTable(double freq);
+    void initialize(double F, int N);
+    void setFrequency(double f);
 
-    float getSample();
+    void start();
+    void stop();
 
-    void cursorInc();
+    double getAmplitude();
+
+    bool isPlaying();
 
 private:
-    static constexpr double m_period = 2 * M_PI;
-    static const int m_tableSize = 64;
-    static constexpr float m_sampleSize = 44100.0;
+    double m_sampleRate;
+    int m_samples;
 
-    std::vector<float> m_wavetable;
+    double m_step;
+    double m_cur;
 
-    float m_cursor;
-    float m_step;
+    bool m_isPlaying;
 
-    double m_freq;
+    std::vector<double> m_table;
 
-    float linInterpol();
+    void generateTable();
 };
 
 #endif

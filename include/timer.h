@@ -14,8 +14,8 @@ public:
     bool isRunning();
 
 private:
-    Uint32 mStartTicks = 0;
-    bool mRunning = false;
+    Uint32 m_StartTicks = 0;
+    bool m_Running = false;
 };
 
 #endif

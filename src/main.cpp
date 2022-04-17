@@ -1,6 +1,7 @@
 #include <iostream>
 #include <SDL2/SDL.h>
 #include "audio_engine.h"
+#include "instrument.h"
 #include "timer.h"
 
 using std::cout;
@@ -26,7 +27,12 @@ int main()
     SDL_Event e;
     Timer fpsTimer;
 
-    AudioEngine engine;
+    Instrument instrument;
+
+    AudioEngine engine(instrument);
+    if (!engine.initialize()) return -1;
+
+    instrument.setFrequency(440);
 
     while(!quit) {
         fpsTimer.start();
@@ -35,6 +41,7 @@ int main()
             if (e.type == SDL_KEYDOWN) {
                 switch (e.key.keysym.sym) {
                     case SDLK_q:
+                        if (engine.isPlaying()) engine.stop();
                         quit = true;
                         break;
 
@@ -42,8 +49,17 @@ int main()
                         if (engine.isPlaying()) engine.stop();
                         else engine.start();
                         break;
+
+                    case SDLK_1:
+                        instrument.start();
+                        break;
+
+                    case SDLK_2:
+                        instrument.stop();
+                        break;
                 }
             } else if (e.type == SDL_QUIT) {
+                if (engine.isPlaying()) engine.stop();
                 quit = true;
             }
         }

@@ -1,33 +1,75 @@
 #include <cmath>
+#include <iostream>
 #include "instrument.h"
 
-void Instrument::generateTable(double freq)
-{
-    m_freq = freq;
-    if (m_freq == 0) return;
+using std::cout;
+using std::endl;
 
-    for (size_t i = 0; i != m_tableSize; ++i) {
-        // OK to cast, won't lose precision with possible table size
-        double v = sin(m_period * static_cast<float>(i) / m_tableSize);
-        m_wavetable.push_back(v);
+void Instrument::initialize(double F, int N)
+{
+    m_sampleRate = F;
+    m_samples = N - 1;
+    m_step = 2 * M_PI / m_samples;
+    cout << "Instrument initialized" << endl;
+    cout << "F = " << m_sampleRate << " samples per second" << endl;
+    cout << "N = " << m_samples << " samples" << endl;
+    cout << "s = " << m_step << endl;
+
+    generateTable();
+}
+
+
+void Instrument::setFrequency(double freq)
+{
+    m_step = (double)m_samples * freq / m_sampleRate;
+    cout << "Frequency set" << endl;
+    cout << "f = " << freq << " Hz" << endl;
+    cout << "p = " << m_step << " samples" << endl;
+}
+
+void Instrument::generateTable()
+{
+    if (!m_step) {
+        cout << "Error: not initialized" << endl;
+        return;
     }
 
-    m_cursor = 0.0;
-    m_step = m_freq * static_cast<float>(m_wavetable.size()) / m_sampleSize;
+    for (int i = 0; i < m_samples; ++i) {
+        double a = std::sin(m_cur);
+        m_table.push_back(a);
+        m_cur += m_step;
+    }
+    m_table.push_back(0);
 }
 
-float Instrument::getSample()
+void Instrument::start()
 {
-    m_cursor = fmod(m_cursor, static_cast<float>(m_wavetable.size()));
-    auto sample = linInterpol();
-    m_cursor += m_step;
-    return sample;
+    m_cur = 0.0;
+    m_isPlaying = true;
 }
 
-float Instrument::linInterpol()
+void Instrument::stop()
 {
-    auto floor = static_cast<typename decltype(m_wavetable)::size_type>(m_cursor);
-    auto ceil = static_cast<typename decltype(m_wavetable)::size_type>(std::ceil(m_cursor)) % m_wavetable.size();
-    auto ceilWeight = m_cursor - static_cast<float>(floor);
-    return m_wavetable.at(m_cursor) * ceilWeight + (1.f - ceilWeight) * m_wavetable.at(floor);
+    m_isPlaying = false;
+}
+
+double Instrument::getAmplitude()
+{
+    int i0 = (int)m_cur;
+    int i1 = i0 + 1;
+    double m = m_cur - i0;
+    double s0 = m_table.at(i0);
+    double s1 = m_table.at(i1);
+    double a = s0 + m * (s1 - s0);
+
+    if ((m_cur += m_step) > (double)m_samples) {
+        m_cur -= m_samples;
+    }
+
+    return a;
+}
+
+bool Instrument::isPlaying()
+{
+    return m_isPlaying;
 }

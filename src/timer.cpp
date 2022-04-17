@@ -2,23 +2,23 @@
 
 void Timer::start()
 {
-    mStartTicks = SDL_GetTicks();
-    mRunning = true;
+    m_StartTicks = SDL_GetTicks();
+    m_Running = true;
 }
 
 void Timer::stop()
 {
-    mStartTicks = 0;
-    mRunning = false;
+    m_StartTicks = 0;
+    m_Running = false;
 }
 
 Uint32 Timer::getTicks()
 {
-    if (!mRunning) return mStartTicks;
-    return SDL_GetTicks() - mStartTicks;
+    if (!m_Running) return m_StartTicks;
+    return SDL_GetTicks() - m_StartTicks;
 }
 
 bool Timer::isRunning()
 {
-    return mRunning;
+    return m_Running;
 }
