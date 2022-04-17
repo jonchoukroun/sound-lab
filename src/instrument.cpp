@@ -9,15 +9,12 @@ void Instrument::initialize(double F, int N)
 {
     m_sampleRate = F;
     m_samples = N - 1;
-    m_step = 2 * M_PI / m_samples;
     cout << "Instrument initialized" << endl;
     cout << "F = " << m_sampleRate << " samples per second" << endl;
     cout << "N = " << m_samples << " samples" << endl;
-    cout << "s = " << m_step << endl;
 
     generateTable();
 }
-
 
 void Instrument::setFrequency(double freq)
 {
@@ -27,30 +24,16 @@ void Instrument::setFrequency(double freq)
     cout << "p = " << m_step << " samples" << endl;
 }
 
-void Instrument::generateTable()
+void Instrument::setDuration(double dur)
 {
-    if (!m_step) {
-        cout << "Error: not initialized" << endl;
-        return;
-    }
-
-    for (int i = 0; i < m_samples; ++i) {
-        double a = std::sin(m_cur);
-        m_table.push_back(a);
-        m_cur += m_step;
-    }
-    m_table.push_back(0);
+    m_duration = dur;
 }
 
-void Instrument::start()
+void Instrument::trigger()
 {
     m_cur = 0.0;
+    m_elapsed = 0.0;
     m_isPlaying = true;
-}
-
-void Instrument::stop()
-{
-    m_isPlaying = false;
 }
 
 double Instrument::getAmplitude()
@@ -69,7 +52,38 @@ double Instrument::getAmplitude()
     return a;
 }
 
+// TODO: combine engine's time step with sample step using
+// time to sample conversion
+void Instrument::update(double time)
+{
+    if ((m_elapsed += time) >= m_duration) {
+        m_isPlaying = false;
+    }
+}
+
 bool Instrument::isPlaying()
 {
     return m_isPlaying;
+}
+
+void Instrument::generateTable()
+{
+    if (!m_step) {
+        cout << "Error: not initialized" << endl;
+        return;
+    }
+
+    for (int i = 0; i < m_samples; ++i) {
+        double a = std::sin(2 * M_PI * i / m_samples);
+        m_table.push_back(a);
+        m_cur += m_step;
+    }
+    m_table.push_back(0);
+}
+
+void Instrument::increment()
+{
+    if ((m_cur += m_step) > (double)m_samples) {
+        m_cur -= m_samples;
+    }
 }

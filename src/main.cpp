@@ -32,7 +32,8 @@ int main()
     AudioEngine engine(instrument);
     if (!engine.initialize()) return -1;
 
-    instrument.setFrequency(440);
+    instrument.setFrequency(220);
+    instrument.setDuration(1.0);
 
     while(!quit) {
         fpsTimer.start();
@@ -51,11 +52,7 @@ int main()
                         break;
 
                     case SDLK_1:
-                        instrument.start();
-                        break;
-
-                    case SDLK_2:
-                        instrument.stop();
+                        instrument.trigger();
                         break;
                 }
             } else if (e.type == SDL_QUIT) {

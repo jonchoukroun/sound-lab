@@ -33,9 +33,8 @@ private:
     SDL_AudioDeviceID m_deviceId = 0;
     SDL_AudioSpec m_receivedSpec {};
 
-    static constexpr double m_step = 1000.0 / (double)m_sampleRate;
+    static constexpr double m_step = 1.0 / (double)m_sampleRate;
     bool m_playing = false;
-    double m_elapsed = 0.0;
 
     static void audioCallback(void *userdata, Uint8 *stream, int len);
     void fillBuffer(const Uint8* const stream, int len);

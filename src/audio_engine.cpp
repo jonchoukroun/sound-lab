@@ -45,7 +45,6 @@ bool AudioEngine::initialize()
 void AudioEngine::start()
 {
     cout << "Play" << endl;
-    m_elapsed = 0.0;
     m_playing = true;
     SDL_PauseAudioDevice(m_deviceId, SDL_FALSE);
 }
@@ -83,6 +82,6 @@ void AudioEngine::fillBuffer(const Uint8* const stream, int len)
             output += GAIN * m_instrument.getAmplitude();
         }
         out[i] = output;
-        m_elapsed += m_step;
+        m_instrument.update(m_step);
     }
 }
