@@ -4,7 +4,8 @@
 #include <array>
 #include <SDL2/SDL.h>
 #include <vector>
-#include "instrument.h"
+#include "noise.h"
+#include "sine.h"
 
 using std::array;
 using std::vector;
@@ -12,7 +13,8 @@ using std::vector;
 class AudioEngine
 {
 public:
-    AudioEngine(Instrument &);
+    AudioEngine(Sine &);
+    // AudioEngine(Noise &);
     ~AudioEngine();
 
     bool initialize();
@@ -24,7 +26,8 @@ public:
     SDL_AudioDeviceID getAudioDevice();
 
 private:
-    Instrument &m_instrument;
+    // Noise &m_noise;
+    Sine &m_sine;
 
     static const int m_sampleRate = 44100;
     static const int m_sampleSize = 1024;
@@ -33,7 +36,6 @@ private:
     SDL_AudioDeviceID m_deviceId = 0;
     SDL_AudioSpec m_receivedSpec {};
 
-    static constexpr double m_step = 1.0 / (double)m_sampleRate;
     bool m_playing = false;
 
     static void audioCallback(void *userdata, Uint8 *stream, int len);

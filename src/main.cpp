@@ -1,8 +1,8 @@
 #include <iostream>
 #include <SDL2/SDL.h>
 #include "audio_engine.h"
-#include "envelope.h"
-#include "instrument.h"
+#include "noise.h"
+#include "sine.h"
 #include "timer.h"
 
 using std::cout;
@@ -31,28 +31,19 @@ int main()
     SDL_Event e;
     Timer fpsTimer;
 
-    Envelope::Settings es {
+    Sine::Settings is {
         .sampleRate = SAMPLE_RATE,
-        .sampleSize = SAMPLE_SIZE,
-        .attack = 0.0,
-        .decay = 0.3 * SAMPLE_RATE,
-        .targetRatioA = 0.0001,
-        .targetRatioD = 0.0001
+        .sampleSize = SAMPLE_SIZE
     };
-    Envelope ampEnv {es};
+    Sine sine {is};
 
-    Instrument::Settings is {
-        .sampleRate = SAMPLE_RATE,
-        .sampleSize = SAMPLE_SIZE,
-        .frequency = 47,
-        .ampEnv = ampEnv
-    };
-    Instrument instrument {is};
+    sine.setFrequency(480);
 
-    AudioEngine engine(instrument);
+    // Noise noise;
+
+    AudioEngine engine(sine);
+    // AudioEngine engine(noise);
     if (!engine.initialize()) return -1;
-
-    instrument.setFrequency(67);
 
     while(!quit) {
         fpsTimer.start();
@@ -70,8 +61,9 @@ int main()
                         else engine.start();
                         break;
 
-                    case SDLK_1:
-                        instrument.trigger();
+                    case SDLK_f:
+                        sine.toggleFilter();
+                        // noise.toggleFilter();
                         break;
                 }
             } else if (e.type == SDL_QUIT) {
