@@ -62,7 +62,7 @@ int main()
                         break;
 
                     case SDLK_f:
-                        sine.toggleFilter();
+                        // sine.toggleFilter();
                         // noise.toggleFilter();
                         break;
                 }

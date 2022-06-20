@@ -1,4 +1,5 @@
 #include <cmath>
+#include <fstream>
 #include <iostream>
 #include "sine.h"
 
@@ -23,6 +24,25 @@ void Sine::setFrequency(double freq)
     m_phaseStepH1 = (double)m_samples * (freq * 2.0) / m_sampleRate;
     m_phaseStepH2 = (double)m_samples * (freq * 4.0) / m_sampleRate;
     generateTable();
+
+    dft();
+    toPolar();
+
+    std::ofstream f;
+    f.open("sine.csv");
+    f << "Time Domain,,,Frequency Domain\nN,Amplitude,,Freq,M,theta\n";
+    for (auto i = 0; i < m_samples; ++i) {
+        auto freq = i * m_XN;
+        f << i << "," << m_table[i];
+        if (i < m_XN) {
+            f << ",,";
+            f << freq << "," << m_XM[i] << "," << m_XTheta[i] << "\n";
+        } else {
+            f << "\n";
+        }
+    }
+
+    f.close();
 }
 
 // Use linear interpolation to get wavetable sample
@@ -78,4 +98,28 @@ double Sine::getSampleForCursor(double cursor)
     double y0 = m_table.at(x0);
     double y1 = m_table.at(x1);
     return y0 + m * (y1 - y0);
+}
+
+void Sine::dft()
+{
+    m_XR.fill(0);
+    m_XI.fill(0);
+
+    auto N = m_table.size();
+    for (auto k = 0; k < m_XN; ++k) {
+        for (decltype(N) i = 0; i < N; ++i) {
+            m_XR[k] = m_XR[k] + m_table[i] * cos(M_PI * 2 * k * i / N);
+            m_XI[k] = m_XI[k] - m_table[i] * sin(M_PI * 2 * k * i / N);
+        }
+    }
+}
+
+void Sine::toPolar()
+{
+    m_XM.fill(0);
+    m_XTheta.fill(0);
+    for (auto i = 0; i < m_XN; ++i) {
+        m_XM[i] = sqrt(pow(m_XR[i], 2) + pow(m_XI[i], 2));
+        m_XTheta[i] = atan(m_XI[i] / m_XR[i]);
+    }
 }

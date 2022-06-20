@@ -1,6 +1,7 @@
 #ifndef SINE_H
 #define SINE_H
 
+#include <array>
 #include <vector>
 
 class Sine
@@ -35,13 +36,24 @@ private:
 
     std::vector<double> m_table;
 
-    bool m_filter = false;
-    double a, b = 0.5;
-    double last = 0.0;
-
     void generateTable();
     void incrementPhase();
 
+    // DFT analysis
+    static const int m_XN = 128;
+    // Rectangular form
+    std::array<double, m_XN> m_XR;
+    std::array<double, m_XN> m_XI;
+    // Polar form
+    std::array<double, m_XN> m_XM;
+    std::array<double, m_XN> m_XTheta;
+
+    void dft();
+    void toPolar();
+
+    bool m_filter = false;
+    double a, b = 0.5;
+    double last = 0.0;
     double getSampleForCursor(double);
 };
 
