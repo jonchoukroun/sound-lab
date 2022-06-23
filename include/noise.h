@@ -3,8 +3,10 @@
 
 #include <array>
 #include <random>
+#include <vector>
+#include "dft.h"
 
-const int SAMPLES = 256;
+const int SAMPLES = 44100;
 const int SAMPLING_RATE = 44100;
 
 class Noise
@@ -12,6 +14,8 @@ class Noise
 public:
     Noise();
     ~Noise() = default;
+
+    void trigger();
 
     double generateSample();
 
@@ -28,19 +32,11 @@ private:
     int m_cursor = 0;
 
     void generateTable();
-    double clampRndSample();
+
+    bool m_playing;
 
     // DFT analysis
-    static const int m_XN = (m_samples / 2) + 1; // 129
-    // Rectangular form
-    std::array<double, m_XN> m_XR;
-    std::array<double, m_XN> m_XI;
-    // Polar form
-    std::array<double, m_XN> m_XM;
-    std::array<double, m_XN> m_XTheta;
-
-    void dft();
-    void toPolar();
+    DFT m_DFT;
 
     // LP Filter
     bool m_filter;

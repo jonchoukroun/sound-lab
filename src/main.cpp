@@ -31,18 +31,18 @@ int main()
     SDL_Event e;
     Timer fpsTimer;
 
-    Sine::Settings is {
-        .sampleRate = SAMPLE_RATE,
-        .sampleSize = SAMPLE_SIZE
-    };
-    Sine sine {is};
+    // Sine::Settings is {
+    //     .sampleRate = SAMPLE_RATE,
+    //     .sampleSize = SAMPLE_SIZE
+    // };
+    // Sine sine {is};
 
-    sine.setFrequency(480);
+    // sine.setFrequency(480);
 
-    // Noise noise;
+    Noise noise;
 
-    AudioEngine engine(sine);
-    // AudioEngine engine(noise);
+    // AudioEngine engine(sine);
+    AudioEngine engine(noise);
     if (!engine.initialize()) return -1;
 
     while(!quit) {
@@ -57,6 +57,9 @@ int main()
                         break;
 
                     case SDLK_SPACE:
+                        // sine.trigger();
+                        noise.trigger();
+
                         if (engine.isPlaying()) engine.stop();
                         else engine.start();
                         break;

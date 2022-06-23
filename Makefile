@@ -13,7 +13,7 @@ SOURCE_DIR=src/
 INCLUDE_DIR=include/
 BUILD_DIR=build/
 
-_OBJ=audio_engine.o sine.o noise.o timer.o main.o
+_OBJ=audio_engine.o dft.o sine.o noise.o timer.o main.o
 OBJ=$(patsubst %,$(BUILD_DIR)%,$(_OBJ))
 
 $(TARGET): $(OBJ)

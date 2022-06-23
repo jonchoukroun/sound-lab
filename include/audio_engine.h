@@ -13,8 +13,8 @@ using std::vector;
 class AudioEngine
 {
 public:
-    AudioEngine(Sine &);
-    // AudioEngine(Noise &);
+    // AudioEngine(Sine &);
+    AudioEngine(Noise &);
     ~AudioEngine();
 
     bool initialize();
@@ -26,8 +26,8 @@ public:
     SDL_AudioDeviceID getAudioDevice();
 
 private:
-    // Noise &m_noise;
-    Sine &m_sine;
+    Noise &m_noise;
+    // Sine &m_sine;
 
     static const int m_sampleRate = 44100;
     static const int m_sampleSize = 1024;

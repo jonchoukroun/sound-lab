@@ -6,12 +6,12 @@ using std::endl;
 
 const double GAIN = 25000.0;
 
-AudioEngine::AudioEngine(Sine &s)
-: m_sine(s)
-{}
-// AudioEngine::AudioEngine(Noise &n)
-// : m_noise(n)
+// AudioEngine::AudioEngine(Sine &s)
+// : m_sine(s)
 // {}
+AudioEngine::AudioEngine(Noise &n)
+: m_noise(n)
+{}
 
 AudioEngine::~AudioEngine()
 {
@@ -78,7 +78,7 @@ void AudioEngine::fillBuffer(const Uint8* const stream, int len)
 {
     short *out = (short *)stream;
     for (unsigned long i = 0; i < (len / sizeof(short)); i++) {
-        out[i] = GAIN * m_sine.getSample();
-        // out[i] = GAIN * m_noise.getSample();
+        // out[i] = GAIN * m_sine.getSample();
+        out[i] = GAIN * m_noise.generateSample();
     }
 }

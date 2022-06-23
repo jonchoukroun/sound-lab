@@ -3,6 +3,7 @@
 
 #include <array>
 #include <vector>
+#include "dft.h"
 
 class Sine
 {
@@ -16,6 +17,8 @@ public:
     ~Sine() = default;
 
     void setFrequency(double f);
+
+    void trigger();
 
     double getSample();
 
@@ -36,20 +39,13 @@ private:
 
     std::vector<double> m_table;
 
+    bool m_playing;
+
     void generateTable();
     void incrementPhase();
 
     // DFT analysis
-    static const int m_XN = 128;
-    // Rectangular form
-    std::array<double, m_XN> m_XR;
-    std::array<double, m_XN> m_XI;
-    // Polar form
-    std::array<double, m_XN> m_XM;
-    std::array<double, m_XN> m_XTheta;
-
-    void dft();
-    void toPolar();
+    DFT m_DFT;
 
     bool m_filter = false;
     double a, b = 0.5;
