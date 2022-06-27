@@ -1,7 +1,9 @@
 #include <iostream>
+#include <memory>
 #include <SDL2/SDL.h>
 #include "audio_engine.h"
 #include "noise.h"
+#include "settings.h"
 #include "sine.h"
 #include "timer.h"
 
@@ -27,24 +29,24 @@ int main()
 {
     if (!init()) return -1;
 
-    bool quit = false;
+    Settings settings;
     SDL_Event e;
     Timer fpsTimer;
 
-    // Sine::Settings is {
-    //     .sampleRate = SAMPLE_RATE,
-    //     .sampleSize = SAMPLE_SIZE
-    // };
-    // Sine sine {is};
+    // Noise noise {settings};
 
-    // sine.setFrequency(480);
+    Sine sine {settings};
+    sine.setFrequency(480);
 
-    Noise noise;
 
-    // AudioEngine engine(sine);
-    AudioEngine engine(noise);
+    AudioEngine engine;
+    engine.updateSettings(&settings);
     if (!engine.initialize()) return -1;
 
+    // engine.setInstrument(&noise);
+    engine.setInstrument(&sine);
+
+    bool quit = false;
     while(!quit) {
         fpsTimer.start();
 
@@ -58,15 +60,10 @@ int main()
 
                     case SDLK_SPACE:
                         // sine.trigger();
-                        noise.trigger();
+                        // noise.trigger();
 
                         if (engine.isPlaying()) engine.stop();
                         else engine.start();
-                        break;
-
-                    case SDLK_f:
-                        // sine.toggleFilter();
-                        // noise.toggleFilter();
                         break;
                 }
             } else if (e.type == SDL_QUIT) {

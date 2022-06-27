@@ -9,70 +9,34 @@ using std::endl;
 const double AMPLITUDE = 0.5;
 
 Sine::Sine(Settings &s)
-: m_sampleRate(s.sampleRate)
-, m_samples(s.sampleSize - 1)
-, m_cursorF(0.0)
-, m_cursorH1(0.0)
-, m_cursorH2(0.0)
-, m_playing(false)
+: Instrument(s)
 {
-    DFT::DFTParams p {
-        .filename = "sine.csv",
-        .samplesCount = 44100
-    };
-    m_DFT.setup(p);
-
     cout << "Sine initialized" << endl;
 }
 
 void Sine::setFrequency(double freq)
 {
-    m_phaseStepF = (double)m_samples * freq / m_sampleRate;
-    m_phaseStepH1 = (double)m_samples * (freq * 2.0) / m_sampleRate;
-    m_phaseStepH2 = (double)m_samples * (freq * 4.0) / m_sampleRate;
+    auto sampleRate = static_cast<double>(settings().sampleRate());
+    m_phaseStep = static_cast<double>(m_samples) * freq / sampleRate;
     generateTable();
-
-    // m_DFT.storeSignal(m_table);
-}
-
-void Sine::trigger()
-{
-    if (m_playing) {
-        m_playing = false;
-        m_DFT.run();
-    } else {
-        m_playing = true;
-    }
 }
 
 // Use linear interpolation to get wavetable sample
 double Sine::getSample()
 {
-    auto f = 0.8 * getSampleForCursor(m_cursorF);
-    auto h1 = 0.6 * getSampleForCursor(m_cursorH1);
-    auto h2 = 0.4 * getSampleForCursor(m_cursorH2);
+    auto y = 0.8 * getSampleForCursor(m_cursor);
     incrementPhase();
-    double y = (f + h1 + h2);
-
-    m_DFT.storeSignal(y);
-
-    double sum = a * last + b * y;
-    last = y;
-    return m_filter ? sum : y;
-}
-
-void Sine::toggleFilter()
-{
-    m_filter = !m_filter;
+    return y;
 }
 
 void Sine::generateTable()
 {
-    if (!m_phaseStepF || !m_phaseStepH1 || !m_phaseStepH2) {
+    if (!m_phaseStep) {
         cout << "Error: not initialized" << endl;
         return;
     }
 
+    auto samples = settings().sampleCount();
     for (int i = 0; i < m_samples; ++i) {
         double a = std::sin(2 * M_PI * i / m_samples);
         m_table.push_back(a);
@@ -82,14 +46,8 @@ void Sine::generateTable()
 
 void Sine::incrementPhase()
 {
-    if ((m_cursorF += m_phaseStepF) > (double)m_samples) {
-        m_cursorF -= m_samples;
-    }
-    if ((m_cursorH1 += m_phaseStepH1) > (double)m_samples) {
-        m_cursorH1 -= m_samples;
-    }
-    if ((m_cursorH2 += m_phaseStepH2) > (double)m_samples) {
-        m_cursorH2 -= m_samples;
+    if ((m_cursor += m_phaseStep) > static_cast<double>(m_samples)) {
+        m_cursor -= m_samples;
     }
 }
 

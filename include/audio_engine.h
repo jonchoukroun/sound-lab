@@ -4,7 +4,9 @@
 #include <array>
 #include <SDL2/SDL.h>
 #include <vector>
+// #include "instrument.h"
 #include "noise.h"
+#include "settings.h"
 #include "sine.h"
 
 using std::array;
@@ -13,11 +15,15 @@ using std::vector;
 class AudioEngine
 {
 public:
-    // AudioEngine(Sine &);
-    AudioEngine(Noise &);
+    AudioEngine() = default;
     ~AudioEngine();
 
+    void updateSettings(Settings *);
+
     bool initialize();
+
+    // void setInstrument(Noise *);
+    void setInstrument(Sine *);
 
     void start();
     void stop();
@@ -26,12 +32,10 @@ public:
     SDL_AudioDeviceID getAudioDevice();
 
 private:
-    Noise &m_noise;
-    // Sine &m_sine;
+    Settings *m_settings;
 
-    static const int m_sampleRate = 44100;
-    static const int m_sampleSize = 1024;
-    static const int m_channels = 1;
+    // Noise *m_noise;
+    Sine *m_sine;
 
     SDL_AudioDeviceID m_deviceId = 0;
     SDL_AudioSpec m_receivedSpec {};
