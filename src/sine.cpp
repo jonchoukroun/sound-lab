@@ -22,7 +22,7 @@ void Sine::setFrequency(double freq)
     m_phaseStep = static_cast<double>(m_wavetable.sampleCount()) * freq / sampleRate;
 }
 
-double Sine::getSample()
+double Sine::processAudio()
 {
     auto y = 0.8 * static_cast<double>(m_wavetable.getAmp(m_cursor));
     incrementPhase();

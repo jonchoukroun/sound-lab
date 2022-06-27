@@ -8,19 +8,13 @@
 #include "instrument.h"
 #include "settings.h"
 
-class Noise
+class Noise : public Instrument
 {
 public:
     Noise(Settings &);
     ~Noise() = default;
 
-    void trigger();
-
-    double generateSample();
-
-    double getSample();
-
-    void toggleFilter();
+    double processAudio();
 
 private:
     std::default_random_engine m_generator;

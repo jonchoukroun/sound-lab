@@ -22,7 +22,8 @@ public:
     bool initialize();
 
     // void setInstrument(Noise *);
-    void setInstrument(Sine *);
+    // void setInstrument(Sine *);
+    void setInstrument(Instrument *);
 
     void start();
     void stop();
@@ -34,7 +35,8 @@ private:
     Settings *m_settings;
 
     // Noise *m_noise;
-    Sine *m_sine;
+    // Sine *m_sine;
+    Instrument *m_instrument;
 
     SDL_AudioDeviceID m_deviceId = 0;
     SDL_AudioSpec m_receivedSpec {};

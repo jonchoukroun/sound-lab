@@ -13,8 +13,3 @@ const Settings & Instrument::settings() const
 {
     return m_settings;
 }
-
-void Instrument::trigger()
-{
-    m_playing = !m_playing;
-}

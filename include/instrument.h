@@ -12,15 +12,10 @@ public:
 
     const Settings & settings() const;
 
-    void trigger();
-
-    // TODO: change to block processing
-    virtual double getSample() = 0;
+    virtual double processAudio() = 0;
 
 private:
     Settings &m_settings;
-
-    bool m_playing;
 };
 
 #endif

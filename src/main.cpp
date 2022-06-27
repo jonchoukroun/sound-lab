@@ -33,7 +33,7 @@ int main()
     SDL_Event e;
     Timer fpsTimer;
 
-    // Noise noise {settings};
+    Noise noise {settings};
 
     Sine sine {settings};
     sine.setFrequency(480);
@@ -42,9 +42,6 @@ int main()
     AudioEngine engine;
     engine.updateSettings(&settings);
     if (!engine.initialize()) return -1;
-
-    // engine.setInstrument(&noise);
-    engine.setInstrument(&sine);
 
     bool quit = false;
     while(!quit) {
@@ -58,10 +55,15 @@ int main()
                         quit = true;
                         break;
 
-                    case SDLK_SPACE:
-                        // sine.trigger();
-                        // noise.trigger();
+                    case SDLK_n:
+                        engine.setInstrument(&noise);
+                        break;
 
+                    case SDLK_s:
+                        engine.setInstrument(&sine);
+                        break;
+
+                    case SDLK_SPACE:
                         if (engine.isPlaying()) engine.stop();
                         else engine.start();
                         break;

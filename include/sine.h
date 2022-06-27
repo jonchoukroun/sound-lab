@@ -14,7 +14,7 @@ public:
 
     void setFrequency(double f);
 
-    double getSample();
+    double processAudio();
 
 private:
     WavetableOsc m_wavetable;

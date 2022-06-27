@@ -49,9 +49,14 @@ bool AudioEngine::initialize()
 //     m_noise = n;
 // }
 
-void AudioEngine::setInstrument(Sine *s)
+// void AudioEngine::setInstrument(Sine *s)
+// {
+//     m_sine = s;
+// }
+
+void AudioEngine::setInstrument(Instrument *i)
 {
-    m_sine = s;
+    m_instrument = i;
 }
 
 void AudioEngine::start()
@@ -89,7 +94,6 @@ void AudioEngine::fillBuffer(const Uint8* const stream, int len)
 {
     short *out = (short *)stream;
     for (unsigned long i = 0; i < (len / sizeof(short)); i++) {
-        // out[i] = GAIN * m_noise->generateSample();
-        out[i] = GAIN * m_sine->getSample();
+        out[i] = GAIN * m_instrument->processAudio();
     }
 }
