@@ -6,24 +6,28 @@ using std::endl;
 
 const double GAIN = 25000.0;
 
-AudioEngine::AudioEngine(Instrument &inst)
-: m_instrument(inst)
-{}
-
 AudioEngine::~AudioEngine()
 {
     SDL_CloseAudioDevice(m_deviceId);
 }
 
+void AudioEngine::updateSettings(Settings *s)
+{
+    m_settings = s;
+    initialize();
+}
+
 bool AudioEngine::initialize()
 {
     SDL_AudioSpec desiredSpec;
-    desiredSpec.freq = m_sampleRate;
+    desiredSpec.freq = m_settings->sampleRate();
     desiredSpec.format = AUDIO_S16;
-    desiredSpec.channels = 1;
-    desiredSpec.samples = m_sampleSize;
+    desiredSpec.channels = m_settings->channelCount();
+    desiredSpec.samples = m_settings->sampleCount();
     desiredSpec.callback = &audioCallback;
     desiredSpec.userdata = this;
+
+    if (m_deviceId != 0) SDL_CloseAudioDevice(m_deviceId);
 
     m_deviceId = SDL_OpenAudioDevice(
         NULL,
@@ -38,6 +42,16 @@ bool AudioEngine::initialize()
     }
 
     return true;
+}
+
+// void AudioEngine::setInstrument(Noise *n)
+// {
+//     m_noise = n;
+// }
+
+void AudioEngine::setInstrument(Sine *s)
+{
+    m_sine = s;
 }
 
 void AudioEngine::start()
@@ -75,11 +89,7 @@ void AudioEngine::fillBuffer(const Uint8* const stream, int len)
 {
     short *out = (short *)stream;
     for (unsigned long i = 0; i < (len / sizeof(short)); i++) {
-        double output = 0.0;
-        if (m_instrument.isPlaying()) {
-            output += GAIN * m_instrument.getSample();
-        }
-        out[i] = output;
-        m_instrument.update(m_step);
+        // out[i] = GAIN * m_noise->generateSample();
+        out[i] = GAIN * m_sine->getSample();
     }
 }

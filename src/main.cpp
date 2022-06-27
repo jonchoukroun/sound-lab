@@ -1,8 +1,10 @@
 #include <iostream>
+#include <memory>
 #include <SDL2/SDL.h>
 #include "audio_engine.h"
-#include "envelope.h"
-#include "instrument.h"
+#include "noise.h"
+#include "settings.h"
+#include "sine.h"
 #include "timer.h"
 
 using std::cout;
@@ -27,33 +29,24 @@ int main()
 {
     if (!init()) return -1;
 
-    bool quit = false;
+    Settings settings;
     SDL_Event e;
     Timer fpsTimer;
 
-    Envelope::Settings es {
-        .sampleRate = SAMPLE_RATE,
-        .sampleSize = SAMPLE_SIZE,
-        .attack = 0.0,
-        .decay = 0.3 * SAMPLE_RATE,
-        .targetRatioA = 0.0001,
-        .targetRatioD = 0.0001
-    };
-    Envelope ampEnv {es};
+    // Noise noise {settings};
 
-    Instrument::Settings is {
-        .sampleRate = SAMPLE_RATE,
-        .sampleSize = SAMPLE_SIZE,
-        .frequency = 47,
-        .ampEnv = ampEnv
-    };
-    Instrument instrument {is};
+    Sine sine {settings};
+    sine.setFrequency(480);
 
-    AudioEngine engine(instrument);
+
+    AudioEngine engine;
+    engine.updateSettings(&settings);
     if (!engine.initialize()) return -1;
 
-    instrument.setFrequency(67);
+    // engine.setInstrument(&noise);
+    engine.setInstrument(&sine);
 
+    bool quit = false;
     while(!quit) {
         fpsTimer.start();
 
@@ -66,12 +59,11 @@ int main()
                         break;
 
                     case SDLK_SPACE:
+                        // sine.trigger();
+                        // noise.trigger();
+
                         if (engine.isPlaying()) engine.stop();
                         else engine.start();
-                        break;
-
-                    case SDLK_1:
-                        instrument.trigger();
                         break;
                 }
             } else if (e.type == SDL_QUIT) {
