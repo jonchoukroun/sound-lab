@@ -1,10 +1,10 @@
-#ifndef SINE_H
-#define SINE_H
+#pragma once
 
 #include <array>
 #include <vector>
 #include "instrument.h"
 #include "settings.h"
+#include "wavetable_osc.h"
 
 class Sine : public Instrument
 {
@@ -17,16 +17,11 @@ public:
     double getSample();
 
 private:
-    std::vector<double> m_table;
-    static constexpr int m_samples = 128;
+    WavetableOsc m_wavetable;
     double m_phaseStep = 0.0;
     double m_cursor = 0.0;
 
     bool m_playing = false;
 
-    void generateTable();
     void incrementPhase();
-    double getSampleForCursor(double);
 };
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef AUDIO_ENGINE_H
-#define AUDIO_ENGINE_H
+#pragma once
 
 #include <array>
 #include <SDL2/SDL.h>
@@ -45,5 +44,3 @@ private:
     static void audioCallback(void *userdata, Uint8 *stream, int len);
     void fillBuffer(const Uint8* const stream, int len);
 };
-
-#endif
