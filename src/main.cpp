@@ -3,6 +3,7 @@
 #include <SDL2/SDL.h>
 #include "audio_engine.h"
 #include "noise.h"
+#include "sawtooth.h"
 #include "settings.h"
 #include "sine.h"
 #include "timer.h"
@@ -33,15 +34,19 @@ int main()
     SDL_Event e;
     Timer fpsTimer;
 
+    AudioEngine engine;
+    engine.updateSettings(&settings);
+    if (!engine.initialize()) return -1;
+
     Noise noise {settings};
 
     Sine sine {settings};
     sine.setFrequency(480);
 
+    Sawtooth saw {settings};
+    saw.setFrequency(200);
 
-    AudioEngine engine;
-    engine.updateSettings(&settings);
-    if (!engine.initialize()) return -1;
+    engine.setInstrument(&saw);
 
     bool quit = false;
     while(!quit) {
@@ -57,10 +62,17 @@ int main()
 
                     case SDLK_n:
                         engine.setInstrument(&noise);
+                        cout << "Switched to noise" << endl;
                         break;
 
                     case SDLK_s:
                         engine.setInstrument(&sine);
+                        cout << "Switched to sine" << endl;
+                        break;
+
+                    case SDLK_w:
+                        engine.setInstrument(&saw);
+                        cout << "Switched to sawtooth" << endl;
                         break;
 
                     case SDLK_SPACE:

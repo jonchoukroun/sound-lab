@@ -6,7 +6,9 @@
 
 class WavetableOsc {
 public:
-    WavetableOsc(Settings &);
+    enum Waveform { Sine, Sawtooth };
+
+    WavetableOsc(Settings &, Waveform);
     ~WavetableOsc() = default;
 
     int sampleCount() const;
@@ -15,10 +17,14 @@ public:
     float getAmp(float);
 
 private:
-    static constexpr int m_samples = 128;
-    std::array<float, m_samples> m_table {0};
+    static constexpr int m_samples = 129;
+    std::array<float, m_samples> m_table {0.f};
 
     Settings &m_settings;
 
+    Waveform m_waveform;
+
     void generateTable();
+    void generateSineTable();
+    void generateSawtoothTable();
 };

@@ -1,35 +1,31 @@
-#include <cmath>
-#include <fstream>
-#include <iostream>
-#include <memory>
-#include "sine.h"
+#include "sawtooth.h"
 
 using std::cout;
 using std::endl;
 
-Sine::Sine(Settings &s)
+Sawtooth::Sawtooth(Settings &s)
 : Instrument(s)
-, m_wavetable(s, WavetableOsc::Sine)
+, m_wavetable(s, WavetableOsc::Sawtooth)
 {
-    cout << "Sine initialized" << endl;
+    cout << "Sawtooth initialized" << endl;
 }
 
-void Sine::setFrequency(int f)
+void Sawtooth::setFrequency(int f)
 {
     auto sampleRate = static_cast<double>(settings().sampleRate());
     m_phaseStep = static_cast<double>(m_wavetable.sampleCount()) * f / sampleRate;
 }
 
-double Sine::processAudio()
+double Sawtooth::processAudio()
 {
     auto y = 0.8 * static_cast<double>(m_wavetable.getAmp(m_cursor));
     incrementPhase();
     return y;
 }
 
-void Sine::incrementPhase()
+void Sawtooth::incrementPhase()
 {
-    auto samples = m_wavetable.sampleCount() - 1;
+    auto samples = m_wavetable.sampleCount();
     if ((m_cursor += m_phaseStep) > static_cast<double>(samples)) {
         m_cursor -= samples;
     }
